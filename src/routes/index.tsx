@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LangProvider } from "@/lib/i18n";
+
 import { Nav } from "@/components/landing/Nav";
 import { Hero } from "@/components/landing/Hero";
 import { Features } from "@/components/landing/Features";
