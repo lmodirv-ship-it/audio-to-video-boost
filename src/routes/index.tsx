@@ -1,29 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { LangProvider } from "@/lib/i18n";
+import { Nav } from "@/components/landing/Nav";
+import { Hero } from "@/components/landing/Hero";
+import { Features } from "@/components/landing/Features";
+import { Pricing } from "@/components/landing/Pricing";
+import { Footer } from "@/components/landing/Footer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "HourClips — Turn long podcasts into viral video clips" },
+      {
+        name: "description",
+        content:
+          "Upload a 1-hour podcast. Get a YouTube-ready video with animated waveform, AI subtitles, and 5 vertical shorts — in minutes.",
+      },
+      { property: "og:title", content: "HourClips — Long audio into viral content" },
+      {
+        property: "og:description",
+        content:
+          "Animated waveform videos + AI subtitles + auto-generated shorts for podcasters. Bilingual Arabic & English.",
+      },
+      { property: "og:type", content: "website" },
     ],
   }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <LangProvider>
+      <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
+        <Nav />
+        <main>
+          <Hero />
+          <Features />
+          <Pricing />
+        </main>
+        <Footer />
+      </div>
+    </LangProvider>
   );
 }
