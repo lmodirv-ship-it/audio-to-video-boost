@@ -87,6 +87,17 @@ const dict = {
     "pricing.cta.studio": "خطة استوديو",
     "footer.tag": "© 2026 برسيجن برودكاست سيستمز",
     "footer.status": "النظام يعمل",
+    "nav.signin": "تسجيل الدخول",
+    "nav.signout": "خروج",
+    "nav.dashboard": "لوحة التحكم",
+    "auth.title": "ادخل إلى الاستوديو",
+    "auth.sub": "سجل دخولك لبدء معالجة البودكاست الطويل.",
+    "auth.google": "تابع مع Google",
+    "auth.back": "عودة للرئيسية",
+    "dash.title": "لوحة الاستوديو",
+    "dash.welcome": "مرحباً بعودتك",
+    "dash.empty": "لا توجد عمليات معالجة بعد. ارفع أول حلقة لك للبدء.",
+    "dash.upload": "معالجة جديدة",
   },
 } as const;
 
