@@ -2,24 +2,26 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { Nav } from "@/components/landing/Nav";
 import { Hero } from "@/components/landing/Hero";
+import { Trust } from "@/components/landing/Trust";
 import { Features } from "@/components/landing/Features";
+import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Pricing } from "@/components/landing/Pricing";
+import { FAQ } from "@/components/landing/FAQ";
 import { Footer } from "@/components/landing/Footer";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "HourClips — Turn long podcasts into viral video clips" },
+      { title: "HourClips — Turn podcasts into viral clips" },
       {
         name: "description",
         content:
-          "Upload a 1-hour podcast. Get a YouTube-ready video with animated waveform, AI subtitles, and 5 vertical shorts — in minutes.",
+          "Upload one podcast episode and get 50 pieces of content: short videos, quotes, subtitles, and ready-to-post snippets. Bilingual AR/EN/FR.",
       },
-      { property: "og:title", content: "HourClips — Long audio into viral content" },
+      { property: "og:title", content: "HourClips — Turn podcasts into viral clips" },
       {
         property: "og:description",
-        content:
-          "Animated waveform videos + AI subtitles + auto-generated shorts for podcasters. Bilingual Arabic & English.",
+        content: "AI-powered podcast → short videos for TikTok, YouTube Shorts and Instagram Reels.",
       },
       { property: "og:type", content: "website" },
     ],
@@ -33,8 +35,11 @@ function Index() {
       <Nav />
       <main>
         <Hero />
+        <Trust />
         <Features />
+        <HowItWorks />
         <Pricing />
+        <FAQ />
       </main>
       <Footer />
     </div>
