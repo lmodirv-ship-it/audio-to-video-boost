@@ -14,7 +14,163 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clips: {
+        Row: {
+          created_at: string
+          duration_seconds: number | null
+          end_seconds: number | null
+          id: string
+          platform: string | null
+          project_id: string
+          start_seconds: number | null
+          thumbnail_url: string | null
+          title: string
+          transcript: string | null
+          updated_at: string
+          user_id: string
+          video_url: string | null
+          views: number
+        }
+        Insert: {
+          created_at?: string
+          duration_seconds?: number | null
+          end_seconds?: number | null
+          id?: string
+          platform?: string | null
+          project_id: string
+          start_seconds?: number | null
+          thumbnail_url?: string | null
+          title: string
+          transcript?: string | null
+          updated_at?: string
+          user_id: string
+          video_url?: string | null
+          views?: number
+        }
+        Update: {
+          created_at?: string
+          duration_seconds?: number | null
+          end_seconds?: number | null
+          id?: string
+          platform?: string | null
+          project_id?: string
+          start_seconds?: number | null
+          thumbnail_url?: string | null
+          title?: string
+          transcript?: string | null
+          updated_at?: string
+          user_id?: string
+          video_url?: string | null
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clips_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          finished_at: string | null
+          id: string
+          progress: number
+          project_id: string
+          started_at: string | null
+          status: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          finished_at?: string | null
+          id?: string
+          progress?: number
+          project_id: string
+          started_at?: string | null
+          status?: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          finished_at?: string | null
+          id?: string
+          progress?: number
+          project_id?: string
+          started_at?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jobs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          clips_count: number
+          created_at: string
+          duration_seconds: number | null
+          error_message: string | null
+          id: string
+          language: string | null
+          source_type: string
+          source_url: string | null
+          status: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clips_count?: number
+          created_at?: string
+          duration_seconds?: number | null
+          error_message?: string | null
+          id?: string
+          language?: string | null
+          source_type?: string
+          source_url?: string | null
+          status?: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clips_count?: number
+          created_at?: string
+          duration_seconds?: number | null
+          error_message?: string | null
+          id?: string
+          language?: string | null
+          source_type?: string
+          source_url?: string | null
+          status?: string
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
