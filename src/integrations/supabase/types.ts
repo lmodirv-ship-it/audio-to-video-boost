@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_snapshots: {
+        Row: {
+          archive_name: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          label: string
+          meta: Json
+          size_bytes: number | null
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          archive_name: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          label: string
+          meta?: Json
+          size_bytes?: number | null
+          updated_at?: string
+          version: string
+        }
+        Update: {
+          archive_name?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          label?: string
+          meta?: Json
+          size_bytes?: number | null
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
       clips: {
         Row: {
           created_at: string
