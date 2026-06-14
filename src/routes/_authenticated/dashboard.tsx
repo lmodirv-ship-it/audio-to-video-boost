@@ -18,7 +18,7 @@ function Dashboard() {
   const name = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "";
 
   const projectsQ = useQuery({ queryKey: ["projects"], queryFn: listProjects });
-  const clipsQ = useQuery({ queryKey: ["clips"], queryFn: listClips });
+  const clipsQ = useQuery({ queryKey: ["clips"], queryFn: () => listClips() });
 
   const projects = projectsQ.data ?? [];
   const clips = clipsQ.data ?? [];
@@ -93,7 +93,12 @@ function Dashboard() {
         ) : (
           <div className="divide-y divide-border">
             {recent.map((p) => (
-              <div key={p.id} className="p-5 flex items-center gap-4 hover:bg-background/40 transition-colors">
+              <Link
+                to="/projects/$id"
+                params={{ id: p.id }}
+                key={p.id}
+                className="p-5 flex items-center gap-4 hover:bg-background/40 transition-colors"
+              >
                 <div className="size-10 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center flex-shrink-0">
                   <Play className="size-4 text-primary fill-primary" />
                 </div>
@@ -117,7 +122,7 @@ function Dashboard() {
                 >
                   {p.status}
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         )}

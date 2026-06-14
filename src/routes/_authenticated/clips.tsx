@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashShell } from "@/components/dash/DashShell";
 import { useLang } from "@/lib/i18n";
-import { Play, Download, Share2, Inbox } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { listClips, formatDuration, formatViews } from "@/lib/db";
+import { Play, Download, Share2, Inbox, Trash2 } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteClip, listClips, formatDuration, formatViews, type Clip } from "@/lib/db";
+import { ClipPlayer } from "@/components/studio/ClipPlayer";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/clips")({
@@ -14,7 +16,19 @@ export const Route = createFileRoute("/_authenticated/clips")({
 function ClipsPage() {
   const { t, lang } = useLang();
   const ar = lang === "ar";
-  const { data: clips = [], isLoading } = useQuery({ queryKey: ["clips"], queryFn: listClips });
+  const qc = useQueryClient();
+  const { data: clips = [], isLoading } = useQuery({ queryKey: ["clips"], queryFn: () => listClips() });
+  const [active, setActive] = useState<Clip | null>(null);
+
+  const remove = useMutation({
+    mutationFn: deleteClip,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["clips"] });
+      qc.invalidateQueries({ queryKey: ["projects"] });
+      toast.success(ar ? "تم الحذف" : "Deleted");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   return (
     <DashShell>
@@ -38,12 +52,15 @@ function ClipsPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
           {clips.map((c) => (
             <div key={c.id} className="group border border-border bg-surface/50 rounded-xl overflow-hidden hover:border-primary/50 transition-colors">
-              <div className="aspect-[9/16] bg-gradient-to-br from-primary/30 via-zinc-800 to-zinc-900 relative">
-                <button className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 transition-opacity">
+              <button
+                onClick={() => setActive(c)}
+                className="aspect-[9/16] bg-gradient-to-br from-primary/30 via-zinc-800 to-zinc-900 relative w-full"
+              >
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/40 transition-opacity">
                   <div className="size-12 rounded-full bg-white/90 flex items-center justify-center">
                     <Play className="size-5 fill-black text-black ml-0.5" />
                   </div>
-                </button>
+                </div>
                 {c.platform && (
                   <span className="absolute top-2 left-2 text-[10px] font-mono bg-black/70 text-white px-2 py-0.5 rounded uppercase">
                     {c.platform}
@@ -52,14 +69,25 @@ function ClipsPage() {
                 <span className="absolute bottom-2 right-2 text-[10px] font-mono bg-black/70 text-white px-2 py-0.5 rounded">
                   {formatDuration(c.duration_seconds)}
                 </span>
-              </div>
+              </button>
               <div className="p-3">
                 <h3 className={`text-sm font-medium mb-2 line-clamp-2 ${ar ? "font-arabic" : ""}`}>{c.title}</h3>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span className="font-mono">{formatViews(c.views)}</span>
                   <div className="flex gap-2">
-                    <button onClick={() => toast.success(ar ? "جاري التحميل" : "Downloading")} className="hover:text-primary"><Download className="size-3.5" /></button>
-                    <button onClick={() => toast.success(ar ? "تم النسخ" : "Link copied")} className="hover:text-primary"><Share2 className="size-3.5" /></button>
+                    <button onClick={() => setActive(c)} className="hover:text-primary" title={ar ? "تحميل" : "Download"}>
+                      <Download className="size-3.5" />
+                    </button>
+                    <button onClick={() => setActive(c)} className="hover:text-primary" title={ar ? "مشاركة" : "Share"}>
+                      <Share2 className="size-3.5" />
+                    </button>
+                    <button
+                      onClick={() => { if (confirm(ar ? "حذف هذا المقطع؟" : "Delete this clip?")) remove.mutate(c.id); }}
+                      className="hover:text-red-500"
+                      title={ar ? "حذف" : "Delete"}
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -67,6 +95,8 @@ function ClipsPage() {
           ))}
         </div>
       )}
+
+      {active && <ClipPlayer clip={active} onClose={() => setActive(null)} ar={ar} />}
     </DashShell>
   );
 }

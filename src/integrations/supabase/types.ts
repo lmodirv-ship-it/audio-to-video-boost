@@ -55,12 +55,14 @@ export type Database = {
       }
       clips: {
         Row: {
+          clipped_url: string | null
           created_at: string
           duration_seconds: number | null
           end_seconds: number | null
           id: string
           platform: string | null
           project_id: string
+          published: boolean
           start_seconds: number | null
           thumbnail_url: string | null
           title: string
@@ -71,12 +73,14 @@ export type Database = {
           views: number
         }
         Insert: {
+          clipped_url?: string | null
           created_at?: string
           duration_seconds?: number | null
           end_seconds?: number | null
           id?: string
           platform?: string | null
           project_id: string
+          published?: boolean
           start_seconds?: number | null
           thumbnail_url?: string | null
           title: string
@@ -87,12 +91,14 @@ export type Database = {
           views?: number
         }
         Update: {
+          clipped_url?: string | null
           created_at?: string
           duration_seconds?: number | null
           end_seconds?: number | null
           id?: string
           platform?: string | null
           project_id?: string
+          published?: boolean
           start_seconds?: number | null
           thumbnail_url?: string | null
           title?: string
@@ -170,6 +176,7 @@ export type Database = {
           error_message: string | null
           id: string
           language: string | null
+          metadata: Json
           source_type: string
           source_url: string | null
           status: string
@@ -185,6 +192,7 @@ export type Database = {
           error_message?: string | null
           id?: string
           language?: string | null
+          metadata?: Json
           source_type?: string
           source_url?: string | null
           status?: string
@@ -200,6 +208,7 @@ export type Database = {
           error_message?: string | null
           id?: string
           language?: string | null
+          metadata?: Json
           source_type?: string
           source_url?: string | null
           status?: string
