@@ -18,7 +18,7 @@ function Dashboard() {
   const name = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "";
 
   const projectsQ = useQuery({ queryKey: ["projects"], queryFn: listProjects });
-  const clipsQ = useQuery({ queryKey: ["clips"], queryFn: listClips });
+  const clipsQ = useQuery({ queryKey: ["clips"], queryFn: () => listClips() });
 
   const projects = projectsQ.data ?? [];
   const clips = clipsQ.data ?? [];
