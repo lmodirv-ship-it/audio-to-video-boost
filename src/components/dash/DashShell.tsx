@@ -1,7 +1,8 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Upload, Film, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Upload, Film, Settings, LogOut, Shield } from "lucide-react";
 import { useLang, type Lang } from "@/lib/i18n";
 import { useAuth } from "@/lib/use-auth";
+import { useMyRoles } from "@/lib/use-roles";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/hourclips-logo.jpeg";
 import type { ReactNode } from "react";
@@ -11,6 +12,7 @@ const langLabels: Record<Lang, string> = { en: "EN", ar: "عربي", fr: "FR" };
 export function DashShell({ children }: { children: ReactNode }) {
   const { t, lang, setLang } = useLang();
   const { user } = useAuth();
+  const { isOwner } = useMyRoles();
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
 
@@ -19,7 +21,8 @@ export function DashShell({ children }: { children: ReactNode }) {
     { to: "/upload", label: t("dash.nav.upload"), icon: Upload },
     { to: "/clips", label: t("dash.nav.clips"), icon: Film },
     { to: "/settings", label: t("dash.nav.settings"), icon: Settings },
-  ] as const;
+    ...(isOwner ? [{ to: "/admin", label: lang === "ar" ? "إدارة" : "Admin", icon: Shield }] : []),
+  ] as Array<{ to: string; label: string; icon: typeof LayoutDashboard }>;
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -41,7 +44,7 @@ export function DashShell({ children }: { children: ReactNode }) {
             return (
               <Link
                 key={it.to}
-                to={it.to}
+                to={it.to as "/dashboard"}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                   active
                     ? "bg-primary/15 text-primary border border-primary/30"
