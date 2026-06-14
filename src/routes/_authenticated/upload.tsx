@@ -4,7 +4,7 @@ import { useLang } from "@/lib/i18n";
 import { useState } from "react";
 import { UploadCloud, Link2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { createProject } from "@/lib/db";
+import { createProject, uploadMedia } from "@/lib/db";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/_authenticated/upload")({
@@ -17,36 +17,57 @@ function UploadPage() {
   const ar = lang === "ar";
   const [url, setUrl] = useState("");
   const [dragging, setDragging] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [stage, setStage] = useState<"idle" | "uploading" | "processing">("idle");
   const navigate = useNavigate();
   const qc = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: createProject,
-    onSuccess: () => {
+  const youtubeMutation = useMutation({
+    mutationFn: async () => {
+      setStage("processing");
+      return createProject({
+        title: ar ? "حلقة من يوتيوب" : "YouTube Episode",
+        source_type: "youtube",
+        source_url: url,
+        language: lang,
+      });
+    },
+    onSuccess: (p) => {
       qc.invalidateQueries({ queryKey: ["projects"] });
       qc.invalidateQueries({ queryKey: ["clips"] });
-      toast.success(ar ? "تم إنشاء المشروع وتوليد المقاطع" : "Project created and clips generated");
-      navigate({ to: "/dashboard" });
+      toast.success(ar ? "تم إنشاء المشروع" : "Project created");
+      navigate({ to: "/projects/$id", params: { id: p.id } });
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      toast.error(e.message);
+      setStage("idle");
+    },
   });
 
-  function handleFile(file: File) {
-    mutation.mutate({
-      title: file.name.replace(/\.[^.]+$/, ""),
-      source_type: "upload",
-      source_url: null,
-      language: lang,
-    });
+  async function handleFile(file: File) {
+    try {
+      setStage("uploading");
+      setProgress(0);
+      const { path, duration } = await uploadMedia(file, setProgress);
+      setStage("processing");
+      const p = await createProject({
+        title: file.name.replace(/\.[^.]+$/, ""),
+        source_type: "upload",
+        source_url: path,
+        language: lang,
+        duration_seconds: duration,
+      });
+      qc.invalidateQueries({ queryKey: ["projects"] });
+      qc.invalidateQueries({ queryKey: ["clips"] });
+      toast.success(ar ? "تم الرفع والمعالجة" : "Uploaded and processed");
+      navigate({ to: "/projects/$id", params: { id: p.id } });
+    } catch (e: any) {
+      toast.error(e.message ?? "Upload failed");
+      setStage("idle");
+    }
   }
 
-  function handleYoutube() {
-    if (!url) return;
-    const title = ar ? "حلقة من يوتيوب" : "YouTube Episode";
-    mutation.mutate({ title, source_type: "youtube", source_url: url, language: lang });
-  }
-
-  const busy = mutation.isPending;
+  const busy = stage !== "idle" || youtubeMutation.isPending;
 
   return (
     <DashShell>
@@ -61,7 +82,7 @@ function UploadPage() {
           e.preventDefault();
           setDragging(false);
           const f = e.dataTransfer.files?.[0];
-          if (f) handleFile(f);
+          if (f && !busy) handleFile(f);
         }}
         className={`border-2 border-dashed rounded-2xl p-16 text-center transition-colors ${
           dragging ? "border-primary bg-primary/5" : "border-border bg-surface/40"
@@ -74,7 +95,22 @@ function UploadPage() {
         <p className={`text-sm text-muted-foreground mb-6 ${ar ? "font-arabic" : ""}`}>
           MP3, MP4, WAV, M4A — {ar ? "حتى ٢ جيجابايت" : "up to 2 GB"}
         </p>
-        <label className="bg-primary text-primary-foreground px-6 py-3 font-bold uppercase tracking-tighter text-sm hover:brightness-110 transition-all rounded-lg cursor-pointer inline-block">
+
+        {stage === "uploading" && (
+          <div className="max-w-sm mx-auto mb-6">
+            <div className="h-2 bg-background border border-border rounded-full overflow-hidden">
+              <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+            </div>
+            <p className="text-xs font-mono text-muted-foreground mt-2">{progress}%</p>
+          </div>
+        )}
+        {stage === "processing" && (
+          <p className="text-xs font-mono text-primary mb-6 animate-pulse">
+            {ar ? "جاري توليد المقاطع…" : "Generating clips…"}
+          </p>
+        )}
+
+        <label className={`bg-primary text-primary-foreground px-6 py-3 font-bold uppercase tracking-tighter text-sm hover:brightness-110 transition-all rounded-lg cursor-pointer inline-block ${busy ? "opacity-50 pointer-events-none" : ""}`}>
           {ar ? "اختر ملف" : "Choose File"}
           <input
             type="file"
@@ -107,11 +143,11 @@ function UploadPage() {
             />
           </div>
           <button
-            onClick={handleYoutube}
+            onClick={() => youtubeMutation.mutate()}
             disabled={!url || busy}
             className="bg-primary text-primary-foreground px-6 font-bold uppercase tracking-tighter text-sm hover:brightness-110 transition-all rounded-lg disabled:opacity-40 inline-flex items-center gap-2"
           >
-            {busy && <Loader2 className="size-4 animate-spin" />}
+            {youtubeMutation.isPending && <Loader2 className="size-4 animate-spin" />}
             {t("upload.btn")}
           </button>
         </div>
