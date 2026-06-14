@@ -20,6 +20,7 @@ import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedClipsRouteImport } from './routes/_authenticated/clips'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
@@ -75,6 +76,11 @@ const AuthenticatedClipsRoute = AuthenticatedClipsRouteImport.update({
   path: '/clips',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/support': typeof SupportRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/clips': typeof AuthenticatedClipsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -95,6 +102,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/support': typeof SupportRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/clips': typeof AuthenticatedClipsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/settings': typeof AuthenticatedSettingsRoute
@@ -109,6 +117,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/support': typeof SupportRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/clips': typeof AuthenticatedClipsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
@@ -123,6 +132,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/support'
+    | '/admin'
     | '/clips'
     | '/dashboard'
     | '/settings'
@@ -135,6 +145,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/support'
+    | '/admin'
     | '/clips'
     | '/dashboard'
     | '/settings'
@@ -148,6 +159,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/support'
+    | '/_authenticated/admin'
     | '/_authenticated/clips'
     | '/_authenticated/dashboard'
     | '/_authenticated/settings'
@@ -243,10 +255,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClipsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedClipsRoute: typeof AuthenticatedClipsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
@@ -254,6 +274,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedClipsRoute: AuthenticatedClipsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
